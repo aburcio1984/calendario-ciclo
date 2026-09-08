@@ -1,11 +1,12 @@
 {
-  "name": "Calendario de Ciclo",
+  "name": "Ciclo",
   "short_name": "Ciclo",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#fceef2",
-  "theme_color": "#bc4a69",
-  "description": "Calendario privado para registrar el ciclo menstrual.",
+  "background_color": "#f7f5f6",
+  "theme_color": "#943a54",
+  "description": "Seguimiento privado del ciclo menstrual con inicio y fin rápidos.",
   "icons": [
     {
       "src": "icon-192.png",

@@ -1,20 +1,25 @@
-CALENDARIO DE CICLO - PWA
+CICLO V4 — INICIO Y FIN RÁPIDOS
 
-Archivos:
-- index.html
-- manifest.webmanifest
-- sw.js
-- icon-192.png
-- icon-512.png
-- apple-touch-icon.png
+NOVEDADES
+- Botón “Empezó hoy”.
+- Botón “Terminó hoy”.
+- Al pulsar “Empezó hoy”, la app abre un periodo en curso.
+- Mientras está activo, todos los días desde el inicio hasta hoy se muestran como periodo.
+- Al pulsar “Terminó hoy”, se guardan automáticamente todos los días intermedios.
+- La pantalla principal muestra “Periodo en curso” y el día actual del periodo.
+- Sigue incluyendo selección manual por rango, histórico, vista anual, estadísticas y predicciones con ciclos reales.
+- Conserva los datos de V2/V3.
 
-IMPORTANTE:
-Para que iPhone permita instalarla correctamente como app y usar el modo offline,
-estos archivos deben publicarse bajo HTTPS (por ejemplo GitHub Pages, Netlify,
-Cloudflare Pages o un servidor web propio).
-
-Después:
-1. Abrir la URL en Safari en el iPhone.
-2. Pulsar Compartir.
-3. Elegir "Añadir a pantalla de inicio".
-4. Confirmar "Añadir".
+ACTUALIZAR
+1. Descomprime el ZIP.
+2. Sustituye en la raíz del repositorio:
+   index.html
+   manifest.webmanifest
+   sw.js
+   icon-192.png
+   icon-512.png
+   apple-touch-icon.png
+3. Haz Commit changes.
+4. Espera a GitHub Pages.
+5. Cierra completamente la app en iPhone y vuelve a abrirla.
+6. Si ves la versión anterior, elimina el icono y vuelve a añadir la web desde Safari.
