@@ -1,0 +1,20 @@
+CALENDARIO DE CICLO - PWA
+
+Archivos:
+- index.html
+- manifest.webmanifest
+- sw.js
+- icon-192.png
+- icon-512.png
+- apple-touch-icon.png
+
+IMPORTANTE:
+Para que iPhone permita instalarla correctamente como app y usar el modo offline,
+estos archivos deben publicarse bajo HTTPS (por ejemplo GitHub Pages, Netlify,
+Cloudflare Pages o un servidor web propio).
+
+Después:
+1. Abrir la URL en Safari en el iPhone.
+2. Pulsar Compartir.
+3. Elegir "Añadir a pantalla de inicio".
+4. Confirmar "Añadir".

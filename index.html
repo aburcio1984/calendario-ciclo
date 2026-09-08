@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#bc4a69">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Ciclo">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<title>Calendario de Ciclo</title>
+<style>
+:root{--bg:#fff7f9;--card:#fff;--accent:#bc4a69;--accent2:#f6d7e0;--text:#2b2326;--muted:#7d6a70;--fertile:#e8daf7;--ov:#d2b6f1}
+*{box-sizing:border-box} body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Segoe UI,sans-serif;background:var(--bg);color:var(--text)}
+header{padding:18px 18px 8px;position:sticky;top:0;background:rgba(255,247,249,.94);backdrop-filter:blur(12px);z-index:3}
+h1{font-size:26px;margin:0 0 4px}.sub{color:var(--muted);font-size:14px}
+.wrap{max-width:720px;margin:auto;padding:10px 14px 90px}
+.card{background:var(--card);border-radius:20px;padding:16px;margin:12px 0;box-shadow:0 8px 30px rgba(80,20,40,.07)}
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:8px}
+button{border:0;border-radius:12px;padding:10px 13px;font-weight:650;background:#f4e8ec;color:var(--text)}
+button.primary{background:var(--accent);color:white}
+.month{font-weight:750;font-size:18px;text-align:center;flex:1}
+.week,.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}.week{margin:14px 0 5px;color:var(--muted);font-size:12px;text-align:center}
+.day{aspect-ratio:1;border-radius:14px;background:#faf6f7;display:flex;align-items:center;justify-content:center;position:relative;font-weight:600;cursor:pointer;border:2px solid transparent}
+.day.empty{visibility:hidden}.day.today{border-color:#bda6ad}.day.period{background:#e892aa;color:#4a1424}.day.pred{background:#f6d7e0}.day.fertile{background:var(--fertile)}.day.ov{background:var(--ov)}
+.dot{position:absolute;width:5px;height:5px;border-radius:50%;background:#4c3b40;bottom:5px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.stat{background:#faf3f5;border-radius:16px;padding:12px}.stat b{display:block;font-size:18px}.stat span{font-size:12px;color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:8px;font-size:12px}.tag{padding:7px 10px;border-radius:20px;background:#f5eef0}
+dialog{border:0;border-radius:22px;padding:0;width:min(92vw,520px);box-shadow:0 30px 80px rgba(0,0,0,.25)}dialog::backdrop{background:rgba(0,0,0,.35)}
+.modal{padding:18px}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field{margin:12px 0}.field label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+input,select,textarea{width:100%;padding:11px;border:1px solid #e6d8dc;border-radius:12px;font:inherit;background:white}textarea{min-height:80px}
+.actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}.notice{font-size:12px;color:var(--muted);line-height:1.4}
+footer{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.93);backdrop-filter:blur(12px);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;justify-content:center;gap:10px;border-top:1px solid #f0e5e8}
+</style>
+</head>
+<body>
+<header><div class="wrap" style="padding:0"><h1>Calendario de Ciclo</h1><div class="sub">Privado · los datos se guardan en este dispositivo</div></div></header>
+<main class="wrap">
+  <section class="card">
+    <div class="toolbar"><button id="prev">‹</button><div class="month" id="monthTitle"></div><button id="next">›</button></div>
+    <div class="week"><div>L</div><div>M</div><div>X</div><div>J</div><div>V</div><div>S</div><div>D</div></div>
+    <div class="grid" id="calendar"></div>
+  </section>
+  <section class="card">
+    <div class="stats">
+      <div class="stat"><b id="avgCycle">—</b><span>Ciclo medio</span></div>
+      <div class="stat"><b id="avgPeriod">—</b><span>Periodo medio</span></div>
+      <div class="stat"><b id="nextPeriod">—</b><span>Próximo periodo</span></div>
+    </div>
+  </section>
+  <section class="card">
+    <div class="legend">
+      <span class="tag" style="background:#e892aa">🩸 Periodo</span>
+      <span class="tag" style="background:#f6d7e0">Estimado</span>
+      <span class="tag" style="background:#e8daf7">Ventana fértil</span>
+      <span class="tag" style="background:#d2b6f1">Ovulación estimada</span>
+    </div>
+    <p class="notice">Las predicciones son orientativas y no deben utilizarse como método anticonceptivo ni para diagnosticar problemas médicos.</p>
+  </section>
+</main>
+
+<footer>
+  <button id="export">Exportar copia</button>
+  <button id="importBtn">Importar</button>
+  <input id="importFile" type="file" accept="application/json" hidden>
+</footer>
+
+<dialog id="dlg">
+<div class="modal">
+  <h2 id="dlgDate" style="margin-top:0"></h2>
+  <div class="row">
+    <div class="field"><label>Menstruación</label><select id="period"><option value="">No</option><option>Manchado</option><option>Ligero</option><option>Normal</option><option>Abundante</option></select></div>
+    <div class="field"><label>Dolor</label><select id="pain"><option value="">Sin registrar</option><option>Ninguno</option><option>Leve</option><option>Moderado</option><option>Fuerte</option></select></div>
+  </div>
+  <div class="row">
+    <div class="field"><label>Ánimo</label><select id="mood"><option value="">Sin registrar</option><option>Muy bien</option><option>Bien</option><option>Normal</option><option>Bajo</option><option>Irritable</option></select></div>
+    <div class="field"><label>Relaciones</label><select id="sex"><option value="">Sin registrar</option><option>No</option><option>Sí</option></select></div>
+  </div>
+  <div class="field"><label>Notas / síntomas</label><textarea id="notes" placeholder="Dolor de cabeza, hinchazón, medicación..."></textarea></div>
+  <div class="actions"><button id="delete">Borrar día</button><button id="cancel">Cancelar</button><button class="primary" id="save">Guardar</button></div>
+</div>
+</dialog>
+
+<script>
+const KEY='cycleTrackerDataV1';
+let data=JSON.parse(localStorage.getItem(KEY)||'{}');
+let view=new Date(); view.setDate(1);
+let selected='';
+const cal=document.getElementById('calendar'), title=document.getElementById('monthTitle'), dlg=document.getElementById('dlg');
+
+const iso=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const parse=s=>{const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)};
+function starts(){
+  const days=Object.keys(data).filter(k=>data[k]?.period).sort();
+  return days.filter((d,i)=> i===0 || (parse(d)-parse(days[i-1]))/86400000>1);
+}
+function avg(arr){return arr.length?Math.round(arr.reduce((a,b)=>a+b,0)/arr.length):null}
+function cycleInfo(){
+  const s=starts(); const cycles=[]; for(let i=1;i<s.length;i++) cycles.push(Math.round((parse(s[i])-parse(s[i-1]))/86400000));
+  const avgCycle=avg(cycles)||28;
+  let lens=[]; s.forEach(st=>{let n=0,d=parse(st);while(data[iso(d)]?.period){n++;d.setDate(d.getDate()+1)} if(n)lens.push(n)});
+  const avgPeriod=avg(lens)||5;
+  const last=s.length?parse(s[s.length-1]):null;
+  const next=last?new Date(last):null;if(next)next.setDate(next.getDate()+avgCycle);
+  const ov=next?new Date(next):null;if(ov)ov.setDate(ov.getDate()-14);
+  return {avgCycle,avgPeriod,next,ov};
+}
+function render(){
+  const y=view.getFullYear(),m=view.getMonth();
+  title.textContent=view.toLocaleDateString('es-ES',{month:'long',year:'numeric'});
+  cal.innerHTML='';
+  let first=(new Date(y,m,1).getDay()+6)%7;
+  for(let i=0;i<first;i++){let e=document.createElement('div');e.className='day empty';cal.appendChild(e)}
+  const n=new Date(y,m+1,0).getDate(), info=cycleInfo();
+  for(let day=1;day<=n;day++){
+    const d=new Date(y,m,day), key=iso(d), el=document.createElement('div'); el.className='day'; el.textContent=day;
+    if(key===iso(new Date())) el.classList.add('today');
+    if(data[key]?.period) el.classList.add('period');
+    else if(info.next){
+      const diff=(d-info.next)/86400000;
+      if(diff>=0 && diff<info.avgPeriod) el.classList.add('pred');
+      if(info.ov){
+        const fd=(d-info.ov)/86400000;
+        if(fd>=-5 && fd<=1) el.classList.add(fd===0?'ov':'fertile');
+      }
+    }
+    if(data[key] && (data[key].notes||data[key].pain||data[key].mood||data[key].sex)){let dot=document.createElement('span');dot.className='dot';el.appendChild(dot)}
+    el.onclick=()=>openDay(key); cal.appendChild(el);
+  }
+  document.getElementById('avgCycle').textContent=info.avgCycle+' d';
+  document.getElementById('avgPeriod').textContent=info.avgPeriod+' d';
+  document.getElementById('nextPeriod').textContent=info.next?info.next.toLocaleDateString('es-ES',{day:'2-digit',month:'short'}):'—';
+}
+function openDay(key){
+ selected=key; const v=data[key]||{};
+ document.getElementById('dlgDate').textContent=parse(key).toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'});
+ ['period','pain','mood','sex','notes'].forEach(id=>document.getElementById(id).value=v[id]||'');
+ dlg.showModal();
+}
+document.getElementById('save').onclick=()=>{
+ const obj={}; ['period','pain','mood','sex','notes'].forEach(id=>obj[id]=document.getElementById(id).value);
+ if(Object.values(obj).some(Boolean)) data[selected]=obj; else delete data[selected];
+ localStorage.setItem(KEY,JSON.stringify(data)); dlg.close(); render();
+};
+document.getElementById('delete').onclick=()=>{delete data[selected];localStorage.setItem(KEY,JSON.stringify(data));dlg.close();render()};
+document.getElementById('cancel').onclick=()=>dlg.close();
+document.getElementById('prev').onclick=()=>{view.setMonth(view.getMonth()-1);render()};
+document.getElementById('next').onclick=()=>{view.setMonth(view.getMonth()+1);render()};
+document.getElementById('export').onclick=()=>{
+ const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='copia-calendario-ciclo.json';a.click();URL.revokeObjectURL(a.href)
+};
+document.getElementById('importBtn').onclick=()=>document.getElementById('importFile').click();
+document.getElementById('importFile').onchange=async e=>{try{data=JSON.parse(await e.target.files[0].text());localStorage.setItem(KEY,JSON.stringify(data));render();alert('Copia importada')}catch{alert('Archivo no válido')}};
+if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
+render();
+</script>
+</body></html>
