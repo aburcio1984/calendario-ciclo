@@ -1,25 +1,25 @@
-CICLO V4 — INICIO Y FIN RÁPIDOS
+CICLO V5
 
-NOVEDADES
-- Botón “Empezó hoy”.
-- Botón “Terminó hoy”.
-- Al pulsar “Empezó hoy”, la app abre un periodo en curso.
-- Mientras está activo, todos los días desde el inicio hasta hoy se muestran como periodo.
-- Al pulsar “Terminó hoy”, se guardan automáticamente todos los días intermedios.
-- La pantalla principal muestra “Periodo en curso” y el día actual del periodo.
-- Sigue incluyendo selección manual por rango, histórico, vista anual, estadísticas y predicciones con ciclos reales.
-- Conserva los datos de V2/V3.
+Pantalla simplificada: Mes, Histórico y Estadísticas.
+- Inicio y fin hoy; registro anterior con dos fechas.
+- Toca un día para guardar síntomas, modificar o borrar su registro.
+- Copias de seguridad en Ajustes. Conserva una copia antes de actualizar.
 
-ACTUALIZAR
-1. Descomprime el ZIP.
-2. Sustituye en la raíz del repositorio:
-   index.html
-   manifest.webmanifest
-   sw.js
-   icon-192.png
-   icon-512.png
-   apple-touch-icon.png
-3. Haz Commit changes.
-4. Espera a GitHub Pages.
-5. Cierra completamente la app en iPhone y vuelve a abrirla.
-6. Si ves la versión anterior, elimina el icono y vuelve a añadir la web desde Safari.
+CÁLCULOS
+El ciclo se mide entre inicios consecutivos de sangrado registrado.
+La previsión usa hasta los últimos seis intervalos; sin intervalos usa el valor de Ajustes.
+Los días consecutivos de sangrado forman un periodo. Un hueco inicia otro grupo: registra todos los días para evitar dividirlo.
+El periodo en curso no entra en la media de duración del sangrado.
+La fecha estimada no avanza sola si se supera: espera un nuevo inicio registrado.
+Ovulación y fertilidad son aproximaciones de calendario, no confirmaciones ni anticoncepción.
+Referencia: https://www.nhs.uk/conditions/periods/fertility-in-the-menstrual-cycle/
+
+ACTUALIZACIÓN
+Sustituye index.html y sw.js en GitHub Pages conservando la misma dirección.
+Los registros permanecen en el almacenamiento local del mismo navegador; no se sincronizan entre dispositivos.
+La nueva caché busca la versión actual en red y permite abrir la app sin conexión tras la primera carga.
+Con la versión anterior instalada, abre con conexión, cierra y vuelve a abrir para completar la actualización.
+
+PRUEBAS
+node --test app.test.cjs
+La prueba browser.test.cjs requiere Playwright y Microsoft Edge; PLAYWRIGHT_PATH permite indicar la ubicación de Playwright.
