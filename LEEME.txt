@@ -1,25 +1,36 @@
-CICLO V5
+CICLO 6.0.0
 
-Pantalla simplificada: Mes, Histórico y Estadísticas.
-- Inicio y fin hoy; registro anterior con dos fechas.
-- Toca un día para guardar síntomas, modificar o borrar su registro.
-- Copias de seguridad en Ajustes. Conserva una copia antes de actualizar.
+USO
+1. Pulsa «Periodo completo» para indicar inicio y fin. Si aún no terminó, marca «Sigue en curso».
+2. O pulsa «Registrar un día» / toca un día del calendario e introduce sangrado y dolor.
+3. Antes de guardar verás la nueva estimación. Después de guardar se actualizan calendario, historial y resumen.
+4. En Historial puedes editar o borrar un periodo completo. Los días consecutivos con sangrado forman un periodo.
+5. Las estimaciones se muestran en un color tenue, los registros en rosa intenso, y el manchado en rosa intermedio.
 
 CÁLCULOS
-El ciclo se mide entre inicios consecutivos de sangrado registrado.
-La previsión usa hasta los últimos seis intervalos; sin intervalos usa el valor de Ajustes.
-Los días consecutivos de sangrado forman un periodo. Un hueco inicia otro grupo: registra todos los días para evitar dividirlo.
-El periodo en curso no entra en la media de duración del sangrado.
-La fecha estimada no avanza sola si se supera: espera un nuevo inicio registrado.
-Ovulación y fertilidad son aproximaciones de calendario, no confirmaciones ni anticoncepción.
-Referencia: https://www.nhs.uk/conditions/periods/fertility-in-the-menstrual-cycle/
+La media del ciclo se calcula entre inicios consecutivos de periodos registrados, usando hasta seis intervalos.
+Sin dos inicios se usa la duración configurada en Ajustes. La duración del sangrado usa hasta seis periodos sin incluir el que sigue en curso.
+La fecha estimada no se adelanta sola cuando pasa. No se suponen periodos que no hayas registrado.
+Un hueco de sangrado divide un periodo; registra todos sus días o edita el periodo completo para corregirlo.
+Las previsiones son orientativas, no un diagnóstico ni un método anticonceptivo.
 
-ACTUALIZACIÓN
-Sustituye index.html y sw.js en GitHub Pages conservando la misma dirección.
-Los registros permanecen en el almacenamiento local del mismo navegador; no se sincronizan entre dispositivos.
-La nueva caché busca la versión actual en red y permite abrir la app sin conexión tras la primera carga.
-Con la versión anterior instalada, abre con conexión, cierra y vuelve a abrir para completar la actualización.
+DATOS
+Siguen almacenados en este navegador, sin cuentas ni sincronización. Importar JSON sustituye los datos de este navegador y recalcula las estimaciones.
+La primera escritura V6 migra los datos a una única clave sin borrar las claves antiguas.
+No subas copias con datos personales a GitHub.
+
+PUBLICAR
+Sube a la raíz de GitHub: index.html, app.js, model.js, sw.js, manifest.webmanifest y los tres iconos.
+Es necesario subir TODOS esos archivos: la versión 6 usa app.js y model.js.
+No subas respaldo-version-anterior, versiones, pruebas, capturas ni copias personales.
+GitHub Pages publica desde main y / (root). Abre la app con conexión y recarga/cierra y abre para recibir la actualización.
+Comprueba «Versión 6.0.0» al pie de la página.
+
+VERSIONES
+VERSION y CHANGELOG.md identifican la entrega. Cada entrega nueva tendrá su propio número y ZIP en versiones, sin modificar el ZIP de la anterior.
+La versión anterior se conserva en respaldo-version-anterior.
 
 PRUEBAS
 node --test app.test.cjs
-La prueba browser.test.cjs requiere Playwright y Microsoft Edge; PLAYWRIGHT_PATH permite indicar la ubicación de Playwright.
+node browser.test.cjs
+La segunda requiere Playwright y Microsoft Edge. Se puede indicar la ubicación del paquete con PLAYWRIGHT_PATH.
